@@ -239,6 +239,40 @@ void lines(std::vector<std::string> &lines, const std::string& str) {
 
 这个版本使用`stringstream`实现`lines`函数。由于`stringstream`没有相应的构造函数接收`string_view`类型参数，所以没法采用直接替换的方式，所以翻译过程要复杂点。
 
+2.
+
+```c++
+bool has_prefix(std::string_view str, std::string_view prefix)
+{
+  return str.substr(0, prefix.size()) == prefix;
+}
+```
+
+The `substr` function creates a new `string_view` referring to a subset of the original string in constant time. The `operator==` then compares the contents referred to by the two views. *Note: in C++20, this entire function could be replaced with* `string_view::starts_with()`*.*
+ `substr` 函数创建一个新的 `string_view` ，引用恒定时间内原始字符串的子集。==然后比较两个视图所引用的内容。注意：在C++20中，整个函数可以用`string_view::starts_with()`代替。
+
+When using `string_view` as a function parameter or return value, prefer to pass it by value rather than by reference. It is small, and is designed to
+当使用 `string_view` 作为函数参数或返回值时，更喜欢通过值传递，而不是通过引用传递。它很小，设计用于
+mimic a reference: 模拟参考：
+
+```c++
+void inspect_string(std::string_view s);       // DO THIS
+void insepct_string(const std::string_view& s) // NOT THIS
+```
+
+3.
+
+Also, be aware that `string_view` will not extend the lifetime of a temporary object like a normal reference to `const` will. Suppose we had a function `get_name()` that returned a string object:
+此外，请注意 `string_view` 不会像对 `const` 的正常引用那样延长临时对象的生存期。假设我们有一个函数 `get_name()` ，它返回了一个字符串对象：
+
+```c++
+// SAFE - lifetime extended to scope of 'longer_name'
+const std::string& longer_name = get_name() + " foo";
+
+// ERROR - 'bad_name' refers to temporary whose scope ends on this line
+const std::string_view bad_name = get_name() + " foo";
+```
+
 ## 使用陷阱
 
 世上没有免费的午餐。不恰当的使用`string_view`也会带来一系列的问题。
@@ -306,6 +340,44 @@ std::cout << "Took '" << s << "'";
 ```
 
 - 大多数情况下，你可以将接受const string&或NUL终止的const char*的现有例程安全的转换为string_view。在执行此操作时遇到的唯一危险是，如果已获取函数的地址，则将导致编译中断，因为生成的函数指针类型将有所不同。
+
+## Guidance 指导
+
+How should you get started using `string_view`? What if you’re modernizing an existing code base that already uses `std::string` references everywhere?
+您应该如何开始使用 `string_view` ？如果您正在对已经在各处使用 `std::string` 引用的现有代码库进行现代化，该怎么办？
+
+- Functions that accept a `const char*` or `const string&` (of any string type) parameter, consider replacing with `string_view` unless:
+  接受 `const char*` 或 `const string&` （任何字符串类型）参数的函数，请考虑用 `string_view` 替换，除非：
+   \- you’re passing the argument to a function requiring `const string&` or other null-terminated string (e.g., `fopen` or `printf`)
+  -您将参数传递给一个需要 `const string&` 或其他以null结尾的字符串（例如 `fopen` 或 `printf` ）的函数
+   \- you’re copying the data to a new string object (see below)
+  -您正在将数据复制到一个新的字符串对象（请参见下文）
+- `string_view` knows how to print itself with `operator<<`
+   `string_view` 知道如何使用#1打印自己#
+- Standard associative containers using strings as keys will accept `string_view` in their lookup functions. Support for unordered containers was added in C++20.
+  使用字符串作为键的标准关联容器将在其查找函数中接受 `string_view` 。C++20中增加了对无序容器的支持。
+- A `string_view` can be stored in a container, where a normal reference cannot. Be aware of the lifetime of the underlying character sequence.
+   `string_view` 可以存储在容器中，而普通引用则不能存储在该容器中。请注意基本字符序列的生存期。
+
+The bit about copying string data requires some explanation. Yes, you’re only reading from it. But some string types (including `std::string` on certain platforms) have copy-on-write semantics. Or perhaps the  caller already has a temporary object of the needed type and could have  moved from it. Forcing an explicit copy operation in those cases would  prevent such optimizations.
+关于复制字符串数据的部分需要一些解释。是的，你只是在读它。但有些字符串类型（包括某些平台上的 `std::string` ）具有写时复制语义。或者调用方已经有了所需类型的临时对象，并且可能已经从中移动了。在这种情况下，强制执行显式复制操作将阻止此类优化。
+
+Instead, consider accepting the destination string type **by value**. This allows the caller access to the full set of constructors to efficiently perform
+相反，考虑按值接受目标字符串类型。这允许调用方访问完整的构造函数集，以便有效地执行
+the copy. You can then efficiently move it into place.
+副本。然后，您可以有效地将其移动到位。
+
+```c++
+struct Person
+{
+  std::string m_name;
+
+  void set_name(std::string name)
+  {
+    m_name = std::move(name);
+  }
+};
+```
 
 ## 总结
 
