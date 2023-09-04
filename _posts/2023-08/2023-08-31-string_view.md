@@ -1,3 +1,9 @@
+```shell
+layout: post
+title: "string_view"
+permalink: /_posts/2023-08/
+categories: string_view
+```
 
 # string_view
 
