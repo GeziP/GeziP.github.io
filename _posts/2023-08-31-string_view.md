@@ -1,7 +1,6 @@
 ---
-layout: post
-title: "string_view"
-date: 2023/08/31 20:46:25
+title: string_view
+tags: c++
 categories: string_view
 ---
 
