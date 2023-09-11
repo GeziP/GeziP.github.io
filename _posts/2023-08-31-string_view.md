@@ -1,5 +1,4 @@
 ---
-title: string_view
 tags: c++
 categories: string_view
 ---
