@@ -1,9 +1,9 @@
-```shell
+---
 layout: post
 title: "string_view"
-permalink: /_posts/2023-08/
+date: 2023/08/31 20:46:25
 categories: string_view
-```
+---
 
 # string_view
 
