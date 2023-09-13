@@ -2,7 +2,7 @@
 title: Concurrency
 date: 2023-09-13 18:18:18 +0800
 categories: concurrency
-tags: c++ , tbb
+tags: tbb
 ---
 
 
