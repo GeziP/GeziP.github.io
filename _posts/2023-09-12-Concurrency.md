@@ -182,4 +182,4 @@ int main(int argc, char** argv) {
 
 看下在树莓派3B+上的执行结果：
 
-![1.result]({{ site.url }}/assets/image/posts/2023-09-13-Concurrency/1.result.png)
+![1.result](/assets/image/posts/2023-09-13-Concurrency/1.result.png)
