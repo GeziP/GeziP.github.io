@@ -181,3 +181,5 @@ int main(int argc, char** argv) {
 这个代码使用Intel TBB库实现了多种并行计算方法，包括串行执行和多种并行执行方式，以及使用不同的锁策略和线程本地存储。
 
 看下在树莓派3B+上的执行结果：
+
+![1.result](2023-09-13-Concurrency/1.result.png)
