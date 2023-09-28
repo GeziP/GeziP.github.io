@@ -1,8 +1,8 @@
 ---
 title: Concurrency
 date: 2023-09-12 18:18:18 +0800
-categories: concurrency
-tags: tbb
+categories: c++ concurrency
+tags: tbb concurrency
 ---
 
 

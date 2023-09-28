@@ -1,8 +1,8 @@
 ---
 title: Data Structures for Concurrency
 date: 2023-09-18 18:18:18 +0800
-categories: concurrency
-tags: tbb
+categories: c++ concurrency
+tags: tbb concurrency
 ---
 
 
