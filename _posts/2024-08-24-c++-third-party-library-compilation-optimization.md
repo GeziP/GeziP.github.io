@@ -1,5 +1,5 @@
 ---
-title: c++ 三方库如何编译优化
+title: c++-third-party-library-compilation-optimization
 date: 2024-08-24 18:18:18 +0800
 categories: c++
 tags: 3rd
